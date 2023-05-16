@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>上传抗原检测结果</title>
+    <script src="main.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #fff;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #message, #cha {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+    <script>
+        async function uploadResult() {
+            const email = document.getElementById("email").value;
+            const result = document.getElementById("result").value;
+            const response = await fetch("/upload", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: `result=${encodeURIComponent(result)}&email=${encodeURIComponent(email)}`
+            });
+            const data = await response.json();
+            if (response.ok) {
+                document.getElementById("message").innerText = "上传成功！";
+                document.getElementById("cha").innerText = data.se;
+                document.getElementById("message").classList.add("success");
+            } else {
+                document.getElementById("message").innerText = `上传失败：${data.message}`;
+                document.getElementById("message").classList.add("error");
+            }
+        }
+    </script>
+</head>
+<body>
+    <center>
+    <h1>上传抗原检测结果</h1>
+    <p>结果说明：C（阴性）；T（无效结果）；CT（阳性）</p>
+    <p>输入邮件地址及检测结果：</p>
+    <label for="email">邮件：</label>
+    <input type="text" id="email"><br>
+    <label for="result">检测结果：</label>
+    <input type="text" id="result"><br><br/>
+    <button onclick="uploadResult()">上传</button>
+    <p id="message"></p>
+    <p id="cha"></p>
+    <p id="ban"></p>
+    </center>
+</body>
+</html>

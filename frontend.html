@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>抗原检测结果查询</title>
+    <script src="main.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+    <script>
+        async function searchResult() {
+            const queryCode = document.getElementById("query_code").value;
+            const response = await fetch("/search", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: `query_code=${encodeURIComponent(queryCode)}`
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                document.getElementById("result").innerText = `检测结果：${data.result}`;
+                document.getElementById("result").classList.add("success");
+            } else if (data.status === "not_found") {
+                document.getElementById("result").innerText = "查询码无效。";
+                document.getElementById("result").classList.add("error");
+            } else if (data.status === "C") {
+                document.getElementById("result").innerText = "检测结果：阴性";
+            } else if (data.status === "CT") {
+                document.getElementById("result").innerText = "检测结果：阳性";
+            } else if (data.status === "T") {
+                document.getElementById("result").innerText = "检测结果：无效结果";
+            } else {
+                document.getElementById("result").innerText = "查询出错，请重试";
+                document.getElementById("result").classList.add("error");
+            }
+        }
+    </script>
+</head>
+<body>
+    <center>
+    <h1>抗原检测结果查询</h1>
+    <p>结果说明：C（阴性）；T（无效结果）；CT（阳性）</p>
+    <p>输入查询码查询抗原检测结果：</p>
+    <input type="text" id="query_code">
+    <button onclick="searchResult()">查询</button>
+    <p id="result"></p>
+    <p id="ban"></p>
+    </center>
+</body>
+</html>
